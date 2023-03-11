@@ -19,9 +19,9 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT_NAME }}
   # GAR_LOCATION: us-central1 # TODO: update region of the Artifact Registry
-  GKE_CLUSTER: cluster-1    # TODO: update to cluster name
-  GKE_ZONE: us-central1-c   # TODO: update to cluster zone
-  DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
+  GKE_CLUSTER: my_cluster
+  GKE_ZONE: us-central1
+  # DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
   # REPOSITORY: samples # TODO: update to Artifact Registry docker repository
   # IMAGE: static-site
 
@@ -64,8 +64,8 @@ jobs:
     - name: Set up GKE credentials
       uses: google-github-actions/get-gke-credentials@v0
       with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
         location: ${{ env.GKE_ZONE }}
+        cluster_name: ${{ env.GKE_CLUSTER }}
 
     # Create the terraform vars file for the demo
     - name: Create terraform vars file
@@ -74,6 +74,7 @@ jobs:
       run: |
         touch ${{ env.vars_file }}
         echo 'gcp_project_id = "${{ env.PROJECT_ID }}"' > ${{ env.vars_file }}
+        echo 'region = "${{ env.GKE_ZONE }}"' >> ${{ env.vars_file }}
         echo 'memorystore = false' >> ${{ env.vars_file }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
