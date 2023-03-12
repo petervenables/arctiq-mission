@@ -77,8 +77,8 @@ jobs:
       run: |
         touch ${{ env.vars_file }}
         echo 'gcp_project_id = "${{ env.PROJECT_ID }}"' > ${{ env.vars_file }}
-        echo 'region = "${{ env.GKE_ZONE }}"' >> ${{ env.vars_file }}
-        echo 'memorystore = false' >> ${{ env.vars_file }}
+        echo 'region         = "${{ env.GKE_ZONE }}"' >> ${{ env.vars_file }}
+        echo 'memorystore    = false' >> ${{ env.vars_file }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
