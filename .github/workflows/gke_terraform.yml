@@ -66,17 +66,19 @@ jobs:
         credentials_json: '${{ secrets.GCP_CREDENTIALS_B64 }}'
 
     # get the gcloud binary so we can do the GKE things.
-    - name: 'Set up Cloud SDK'
+    - name: 'Set up gcloud SDK'
       uses: 'google-github-actions/setup-gcloud@v1'
       with:
         project_id: ${{ env.PROJECT_ID }}
+        install_components: gke-gcloud-auth-plugin
+
 
     # Get the GKE credentials so we can deploy to the cluster
-    - name: Set up GKE credentials
-      uses: google-github-actions/get-gke-credentials@v0
-      with:
-        location: ${{ env.GKE_ZONE }}
-        cluster_name: ${{ env.GKE_CLUSTER }}
+    #- name: Set up GKE credentials
+    #  uses: google-github-actions/get-gke-credentials@v0
+    #  with:
+    #    location: ${{ env.GKE_ZONE }}
+    #    cluster_name: ${{ env.GKE_CLUSTER }}
 
     # Create the terraform vars file for the demo
     - name: Create terraform vars file
