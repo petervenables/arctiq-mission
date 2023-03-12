@@ -105,4 +105,7 @@ resource "google_storage_bucket" "default" {
   versioning {
     enabled = true
   }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
