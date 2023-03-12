@@ -19,7 +19,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT_NAME }}
   # GAR_LOCATION: us-central1 # TODO: update region of the Artifact Registry
-  GKE_CLUSTER: my_cluster
+  GKE_CLUSTER: online-boutique
   GKE_ZONE: us-central1
   # DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
   # REPOSITORY: samples # TODO: update to Artifact Registry docker repository
@@ -30,6 +30,9 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     environment: production
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}/microservices-demo/terraform
 
     permissions:
       contents: 'read'
@@ -61,11 +64,11 @@ jobs:
         project_id: ${{ env.PROJECT_ID }}
 
     # Get the GKE credentials so we can deploy to the cluster
-    - name: Set up GKE credentials
-      uses: google-github-actions/get-gke-credentials@v0
-      with:
-        location: ${{ env.GKE_ZONE }}
-        #cluster_name: ${{ env.GKE_CLUSTER }}
+    #- name: Set up GKE credentials
+    #  uses: google-github-actions/get-gke-credentials@v0
+    #  with:
+    #    location: ${{ env.GKE_ZONE }}
+    #    cluster_name: ${{ env.GKE_CLUSTER }}
 
     # Create the terraform vars file for the demo
     - name: Create terraform vars file
