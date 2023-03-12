@@ -47,8 +47,8 @@ jobs:
       with:
         kubectl: '1.17.1'
 
-    - name: 'install gke-gcloud-auth-plugin'
-      run: gcloud components install gke-gcloud-auth-plugin
+    #- name: 'install gke-gcloud-auth-plugin'
+    #  run: gcloud components install gke-gcloud-auth-plugin
 
     # Configure Workload Identity Federation and generate an access token.
     #- id: 'auth'
@@ -72,11 +72,11 @@ jobs:
         project_id: ${{ env.PROJECT_ID }}
 
     # Get the GKE credentials so we can deploy to the cluster
-    #- name: Set up GKE credentials
-    #  uses: google-github-actions/get-gke-credentials@v0
-    #  with:
-    #    location: ${{ env.GKE_ZONE }}
-    #    cluster_name: ${{ env.GKE_CLUSTER }}
+    - name: Set up GKE credentials
+      uses: google-github-actions/get-gke-credentials@v0
+      with:
+        location: ${{ env.GKE_ZONE }}
+        cluster_name: ${{ env.GKE_CLUSTER }}
 
     # Create the terraform vars file for the demo
     - name: Create terraform vars file
