@@ -113,10 +113,13 @@ jobs:
         helm repo add sysdig https://charts.sysdig.com
         helm repo update
 
-        helm install sysdig sysdig/sysdig-deploy \
-          --namespace sysdig-agent \
+        helm install sysdig-agent --namespace sysdig-agent \
           --set global.sysdig.accessKey=${{ secrets.SYSDIG_KEY }} \
           --set global.sysdig.region=us1 \
           --set global.clusterConfig.name=${{ env.PROJECT_ID }} \
-          --set nodeAnalyzer.enabled=false
+          --set nodeAnalyzer.secure.vulnerabilityManagement.newEngineOnly=true \
+          --set global.kspm.deploy=true \
+          --set nodeAnalyzer.nodeAnalyzer.benchmarkRunner.deploy=false \
+          --set agent.gke.autopilot=true \
+          sysdig/sysdig-deploy
 
