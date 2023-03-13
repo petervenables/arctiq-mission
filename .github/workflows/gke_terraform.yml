@@ -106,6 +106,8 @@ jobs:
 
     - name: Install Sysdig Monitor
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      env:
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
         kubectl create ns sysdig-agent
         helm repo add sysdig https://charts.sysdig.com
