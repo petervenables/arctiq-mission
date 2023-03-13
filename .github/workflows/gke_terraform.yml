@@ -104,12 +104,16 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
+    - id: 'get-credentials'
+      uses: 'google-github-actions/get-gke-credentials@v1'
+      with:
+        cluster_name: '${{ env.PROJECT_ID }}'
+        location: '${{ env.GKE_ZONE }}'
+
     - name: Install Sysdig Monitor
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
-        kubectl create ns sysdig-agent --token=${{ secrets.GCP_CREDENTIALS }}
+        kubectl create ns sysdig-agent
         helm repo add sysdig https://charts.sysdig.com
         helm repo update
 
