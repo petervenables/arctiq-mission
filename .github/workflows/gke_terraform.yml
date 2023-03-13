@@ -109,7 +109,7 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
       run: |
-        kubectl create ns sysdig-agent
+        kubectl create ns sysdig-agent --token=${{ secrets.GCP_CREDENTIALS }}
         helm repo add sysdig https://charts.sysdig.com
         helm repo update
 
