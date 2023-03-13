@@ -114,7 +114,7 @@ jobs:
         helm install sysdig sysdig/sysdig-deploy \
           --namespace sysdig-agent \
           --set global.sysdig.accessKey=${{ secrets.SYSDIG_KEY }} \
-          --set global.sysdig.region=${{ env.GKE_ZONE }} \
+          --set global.sysdig.region=gcp-prod-us \
           --set global.clusterConfig.name=${{ env.PROJECT_ID }} \
           --set nodeAnalyzer.enabled=false
 
