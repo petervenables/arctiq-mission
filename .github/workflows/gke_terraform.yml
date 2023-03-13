@@ -18,12 +18,8 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT_NAME }}
-  # GAR_LOCATION: us-central1 # TODO: update region of the Artifact Registry
   GKE_CLUSTER: online-boutique
   GKE_ZONE: us-central1
-  # DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
-  # REPOSITORY: samples # TODO: update to Artifact Registry docker repository
-  # IMAGE: static-site
 
 jobs:
   setup-build-publish-deploy:
@@ -47,9 +43,6 @@ jobs:
       with:
         kubectl: '1.24.11'
 
-    #- name: 'install gke-gcloud-auth-plugin'
-    #  run: gcloud components install gke-gcloud-auth-plugin
-
     # Configure Workload Identity Federation and generate an access token.
     #- id: 'auth'
     #  name: 'Authenticate to Google Cloud'
@@ -72,14 +65,6 @@ jobs:
         project_id: ${{ env.PROJECT_ID }}
         install_components: gke-gcloud-auth-plugin
 
-
-    # Get the GKE credentials so we can deploy to the cluster
-    #- name: Set up GKE credentials
-    #  uses: google-github-actions/get-gke-credentials@v0
-    #  with:
-    #    location: ${{ env.GKE_ZONE }}
-    #    cluster_name: ${{ env.GKE_CLUSTER }}
-
     # Create the terraform vars file for the demo
     - name: Create terraform vars file
       env:
@@ -90,17 +75,15 @@ jobs:
         echo 'region         = "${{ env.GKE_ZONE }}"' >> ${{ env.vars_file }}
         echo 'memorystore    = false' >> ${{ env.vars_file }}
 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    # Install the latest version of Terraform CLI
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
-      #with:
-      #  cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_B64 }}
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -111,7 +94,7 @@ jobs:
     - name: Terraform Plan
       run: terraform plan -input=false
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}      
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_B64 }}      
 
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
@@ -119,4 +102,19 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
       env:
-        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}      
+        GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS_B64 }}
+
+    - name: Install Sysdig Monitor
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: |
+        kubectl create ns sysdig-agent
+        helm repo add sysdig https://charts.sysdig.com
+        helm repo update
+
+        helm install sysdig sysdig/sysdig-deploy \
+          --namespace sysdig-agent \
+          --set global.sysdig.accessKey=${{ secrets.SYSDIG_KEY }} \
+          --set global.sysdig.region=${{ env.GKE_ZONE }} \
+          --set global.clusterConfig.name=${{ env.PROJECT_ID }} \
+          --set nodeAnalyzer.enabled=false
+
