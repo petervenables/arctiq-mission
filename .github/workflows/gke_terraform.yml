@@ -108,7 +108,6 @@ jobs:
       uses: 'google-github-actions/get-gke-credentials@v1'
       with:
         cluster_name: '${{ env.PROJECT_ID }}'
-        location: '${{ env.GKE_ZONE }}-a'
 
     - name: Install Sysdig Monitor
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
