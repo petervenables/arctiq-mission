@@ -104,26 +104,25 @@ jobs:
       env:
         GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
-    - id: 'get-credentials'
-      uses: 'google-github-actions/get-gke-credentials@v1'
-      with:
-        cluster_name: '${{ env.GKE_CLUSTER }}'
-        location: '${{ env.GKE_ZONE }}'
+    #- id: 'get-credentials'
+    #  uses: 'google-github-actions/get-gke-credentials@v1'
+    #  with:
+    #    cluster_name: '${{ env.GKE_CLUSTER }}'
+    #    location: '${{ env.GKE_ZONE }}'
 
-    - name: Install Sysdig Monitor
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: |
-        if [ `kubectl get ns | grep -c sysdig-agent` -eq '0' ]; then kubectl create ns sysdig-agent; fi
-        helm repo add sysdig https://charts.sysdig.com
-        helm repo update
+    #- name: Install Sysdig Monitor
+    #  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    #  run: |
+    #    if [ `kubectl get ns | grep -c sysdig-agent` -eq '0' ]; then kubectl create ns sysdig-agent; fi
+    #    helm repo add sysdig https://charts.sysdig.com
+    #    helm repo update
 
-        helm install sysdig-agent --namespace sysdig-agent \
-          --set global.sysdig.accessKey=${{ secrets.SYSDIG_KEY }} \
-          --set global.sysdig.region=us1 \
-          --set global.clusterConfig.name=${{ env.PROJECT_ID }} \
-          --set nodeAnalyzer.secure.vulnerabilityManagement.newEngineOnly=true \
-          --set global.kspm.deploy=true \
-          --set nodeAnalyzer.nodeAnalyzer.benchmarkRunner.deploy=false \
-          --set agent.gke.autopilot=true \
-          sysdig/sysdig-deploy
-
+    #    helm install sysdig-agent --namespace sysdig-agent \
+    #      --set global.sysdig.accessKey=${{ secrets.SYSDIG_KEY }} \
+    #      --set global.sysdig.region=us1 \
+    #      --set global.clusterConfig.name=${{ env.PROJECT_ID }} \
+    #      --set nodeAnalyzer.secure.vulnerabilityManagement.newEngineOnly=true \
+    #      --set global.kspm.deploy=true \
+    #      --set nodeAnalyzer.nodeAnalyzer.benchmarkRunner.deploy=false \
+    #      --set agent.gke.autopilot=true \
+    #      sysdig/sysdig-deploy
