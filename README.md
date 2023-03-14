@@ -10,6 +10,8 @@ This project deploys the microservices-demo to Google Cloud Platform using githu
 
 There is an architecture diagram to go here. 
 
+And it will be great. 
+
 ## Credits
 
 The microservices-demo is not mine (naturally). I pulled this into my project so I could have a sufficiently complicated service to deploy. The code comes from https://github.com/GoogleCloudPlatform/microservices-demo.
