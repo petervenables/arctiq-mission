@@ -113,7 +113,7 @@ jobs:
     - name: Install Sysdig Monitor
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: |
-        kubectl create ns sysdig-agent
+        if [ `kubectl get ns | grep -c sysdig-agent` -eq '0' ]; then kubectl create ns sysdig-agent; fi
         helm repo add sysdig https://charts.sysdig.com
         helm repo update
 
